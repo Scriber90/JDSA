@@ -1,0 +1,78 @@
+-- Conversion rate by country
+SELECT 
+  all_users.country,
+  number_of_users AS number_of_visitors,
+  users_return_visit / users_first_visit::float *100 AS return_rate,
+  users_subscribe / users_first_visit::float * 100 AS subscribe_rate,
+  users_purchase / users_first_visit::float * 100 AS purchase_rate
+  
+FROM
+    -- Number of users per country
+    (SELECT 
+      country,
+      COUNT(DISTINCT(user_id)) AS users_first_visit
+    FROM
+      first_visit
+    GROUP BY
+      country) AS all_users
+JOIN
+    -- Number of returning users per country  
+      (SELECT
+        first_visit.country,
+        COUNT(DISTINCT(visit.user_id)) AS users_return_visit
+      FROM
+        visit
+      JOIN
+        first_visit
+      ON
+        visit.user_id = first_visit.user_id
+      GROUP BY
+        first_visit.country) AS returning_users
+ON 
+  all_users.country = returning_users.country
+
+JOIN
+  
+    -- Number of subscribers per country
+      (SELECT
+        first_visit.country,
+        COUNT(DISTINCT(subscribe.user_id)) AS users_subscribe
+      FROM
+        subscribe
+      JOIN
+        first_visit
+      ON
+        subscribe.user_id = first_visit.user_id
+      GROUP BY
+        first_visit.country) AS subscribers
+ON  
+  all_users.country = subscribers.country
+
+JOIN   
+
+    -- Number of purcahesing users per country
+      (SELECT
+        first_visit.country,
+        COUNT(DISTINCT(buy.user_id)) AS users_purchase
+      FROM
+        buy
+      JOIN
+        first_visit
+      ON
+        buy.user_id = first_visit.user_id
+      GROUP BY
+        first_visit.country) AS purchasing_users
+ON
+  all_users.country = purchasing_users.country
+
+JOIN
+      (SELECT
+        country,
+        COUNT(DISTINCT(user_id)) AS number_of_users
+      FROM
+        first_visit
+      GROUP BY
+        country) AS number_of_users
+ON       
+  all_users.country = number_of_users.country;  
+  
