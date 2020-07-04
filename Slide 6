@@ -1,0 +1,44 @@
+-- Daily active users
+SELECT 
+  my_date,
+  COUNT(DISTINCT(user_id))
+FROM
+  -- Unite all transactions into one temporary table
+      (SELECT 
+        my_date,
+        user_id,
+        event
+      FROM 
+        first_visit
+
+      UNION
+
+      SELECT 
+        my_date,
+        user_id,
+        event
+      FROM 
+        visit
+
+      UNION
+
+      SELECT 
+        my_date,
+        user_id,
+        event
+      FROM 
+        subscribe
+
+      UNION
+  
+      SELECT 
+        my_date,
+        user_id,
+        event
+      FROM 
+        buy) AS all_events
+-- Filter out outlier
+WHERE 
+  my_date != '2018-03-31'
+GROUP BY
+  my_date;
