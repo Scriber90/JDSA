@@ -1,0 +1,84 @@
+-- Topics segmentation (first visitors)
+
+SELECT 
+topics,
+-- I know I should haved used weighted average here :)
+AVG(distribution) AS avg_distributrion 
+FROM
+
+-- Segmentation by country & topics (no outliers decected)
+    (SELECT 
+      topics_segmentation.country,
+      topics_segmentation.topics,
+      count_topics / all_topics ::float * 100 AS distribution
+    FROM
+        (SELECT
+         country,
+         topics,
+         COUNT(*) AS count_topics
+        FROM
+          first_visit
+        GROUP BY
+          country,
+          topics) AS topics_segmentation
+    JOIN
+        (SELECT
+          country,
+          COUNT(topics) AS all_topics
+        FROM
+          first_visit
+        GROUP BY
+          country) AS sum_top_per_country
+    ON
+      topics_segmentation.country = sum_top_per_country.country
+    ORDER BY 
+      distribution DESC) AS segmentation
+GROUP BY
+  topics
+ORDER BY
+  avg_distributrion DESC;
+  
+  -----------------------------------------------------------------------
+  
+-- Topics segmentation (returning visitors)
+
+SELECT 
+topics,
+-- I know I should haved used weighted average here :)
+AVG(distribution) AS avg_distributrion 
+FROM
+
+-- Segmentation by country & topics (no outliers decected)
+    (SELECT 
+      topics_segmentation.country,
+      topics_segmentation.topics,
+      count_topics / all_topics ::float * 100 AS distribution
+    FROM
+        (SELECT
+         country,
+         sourc,
+         COUNT(*) AS count_topics
+        FROM
+          visit
+        GROUP BY
+          country,
+          topics) AS topics_segmentation
+    JOIN
+
+        (SELECT
+          country,
+          COUNT(topics) AS all_topics
+        FROM
+          visit
+        GROUP BY
+          country) AS sum_top_per_country
+    ON
+      topics_segmentation.country = sum_top_per_country.country
+    ORDER BY 
+      distribution DESC) AS segmentation
+GROUP BY
+  topics
+ORDER BY
+  avg_distributrion DESC;
+  
+  
