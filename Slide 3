@@ -18,7 +18,7 @@ JOIN
       COUNT(DISTINCT(user_id)) /  (SELECT 
                                     COUNT(DISTINCT(user_id))  
                                   FROM 
-                                    first_visit)::float AS distribution
+                                    first_visit)::float * 100 AS distribution
     FROM
       first_visit
     GROUP BY
@@ -50,7 +50,7 @@ JOIN
       COUNT(DISTINCT(user_id)) /  (SELECT 
                                     COUNT(DISTINCT(user_id))  
                                   FROM 
-                                    visit)::float AS distribution
+                                    visit)::float * 100 AS distribution
     FROM
       visit
     GROUP BY
