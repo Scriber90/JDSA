@@ -56,7 +56,7 @@ ON
 
 JOIN   
 
-    -- Number of purcahesing users per country
+    -- Number of purchasing users per country
       (SELECT
         first_visit.country,
         COUNT(DISTINCT(buy.user_id)) AS users_purchase
@@ -74,6 +74,7 @@ ON
   all_users.country = purchasing_users.country
 
 JOIN
+    --Number of unique users in database
       (SELECT
         country,
         COUNT(DISTINCT(user_id)) AS number_of_users
