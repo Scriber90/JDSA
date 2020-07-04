@@ -1,0 +1,10 @@
+-- Daily revenue
+SELECT
+  my_date,
+  SUM(price)
+FROM
+  buy
+GROUP BY
+  my_date
+ORDER BY
+  my_date ASC;
