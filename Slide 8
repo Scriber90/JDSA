@@ -1,0 +1,46 @@
+-- Topics segmentation in country_3
+SELECT
+  topics,
+  COUNT(*) / (SELECT 
+                COUNT(topics)
+              FROM 
+                 first_visit 
+              WHERE 
+                country = 'country_3') ::float 
+FROM
+  first_visit
+WHERE 
+  country = 'country_3'
+GROUP BY
+  topics;
+
+
+
+-- Source segmentation in country_3  
+SELECT
+  source,
+  COUNT(*) / (SELECT 
+                COUNT(source)
+              FROM 
+                 first_visit 
+              WHERE 
+                country = 'country_3') ::float * 100
+FROM
+  first_visit
+WHERE 
+  country = 'country_3'
+GROUP BY
+  source;
+  
+  
+  
+  
+  
+-- Count users per sources 
+SELECT 
+  source,
+  COUNT(*)
+FROM 
+  first_visit
+GROUP BY
+  source;
