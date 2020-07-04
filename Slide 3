@@ -1,0 +1,60 @@
+-- No users and distribution by country (first visitors) 
+SELECT 
+  users_num.country,
+  num_users,
+  distribution
+FROM
+  (SELECT
+    country,
+    COUNT(DISTINCT(user_id)) AS num_users
+  FROM
+    first_visit
+  GROUP BY
+    country) AS users_num
+
+JOIN
+   (SELECT
+      country,
+      COUNT(DISTINCT(user_id)) /  (SELECT 
+                                    COUNT(DISTINCT(user_id))  
+                                  FROM 
+                                    first_visit)::float AS distribution
+    FROM
+      first_visit
+    GROUP BY
+      country) AS users_dist
+
+ON 
+  users_num.country = users_dist.country;
+
+
+
+
+-- No users and distribution by country (returning visitors) 
+SELECT 
+  users_num.country,
+  num_users,
+  distribution
+FROM
+  (SELECT
+    country,
+    COUNT(DISTINCT(user_id)) AS num_users
+  FROM
+    visit
+  GROUP BY
+    country) AS users_num
+
+JOIN
+   (SELECT
+      country,
+      COUNT(DISTINCT(user_id)) /  (SELECT 
+                                    COUNT(DISTINCT(user_id))  
+                                  FROM 
+                                    visit)::float AS distribution
+    FROM
+      visit
+    GROUP BY
+      country) AS users_dist
+
+ON 
+  users_num.country = users_dist.country;
