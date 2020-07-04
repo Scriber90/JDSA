@@ -24,6 +24,13 @@ DATA FORMATTING (change event name to first_read)
 sed 's/read/first_read/g' first_visit.csv > /home/scriber/final_test/first_visit_cleaned.csv
 
 
+CREATE INPUT FILE FOR LINEAR REGRESSION
+awk -F' ' '{print $1,$3,$5}' first_visit.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$5}' visit.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$4}' subscribe.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$4}' buy.csv >> all_events.csv
+
+
 
 DATA LOAD INTO SQL
 
@@ -80,7 +87,3 @@ wc -l /home/scriber/final_test/subscribe.csv     	7618 OK
 wc -l /home/scriber/final_test/buy.csv 	    	 	8407 OK 
 
 
-awk -F' ' '{print $1,$3,$5}' first_visit.csv >> all_events.csv
-awk -F' ' '{print $1,$3,$5}' visit.csv >> all_events.csv
-awk -F' ' '{print $1,$3,$4}' subscribe.csv >> all_events.csv
-awk -F' ' '{print $1,$3,$4}' buy.csv >> all_events.csv
