@@ -13,6 +13,8 @@ FROM
       COUNT(DISTINCT(user_id)) AS users_first_visit
     FROM
       first_visit
+    WHERE  
+      my_date != '2018-03-31'
     GROUP BY
       country) AS all_users
 JOIN
@@ -26,6 +28,8 @@ JOIN
         first_visit
       ON
         visit.user_id = first_visit.user_id
+      WHERE  
+        visit.my_date != '2018-03-31'
       GROUP BY
         first_visit.country) AS returning_users
 ON 
@@ -43,6 +47,8 @@ JOIN
         first_visit
       ON
         subscribe.user_id = first_visit.user_id
+      WHERE  
+        first_visit.my_date != '2018-03-31'
       GROUP BY
         first_visit.country) AS subscribers
 ON  
@@ -60,6 +66,8 @@ JOIN
         first_visit
       ON
         buy.user_id = first_visit.user_id
+      WHERE  
+        buy.my_date != '2018-03-31'
       GROUP BY
         first_visit.country) AS purchasing_users
 ON
@@ -71,8 +79,10 @@ JOIN
         COUNT(DISTINCT(user_id)) AS number_of_users
       FROM
         first_visit
+      WHERE  
+        my_date != '2018-03-31'
       GROUP BY
         country) AS number_of_users
 ON       
-  all_users.country = number_of_users.country;  
+  all_users.country = number_of_users.country; 
   
