@@ -1,0 +1,86 @@
+DELIMITER FORMATING (to seperate date and time section)
+sed 's/;/ /g' dilans_data.csv | sed 's/ America/_America/g' > dilans_data_cleaned.csv
+
+
+DATA SEPERATION INTO 4 TRANSACTION FILES (first visit, returning visit, subscribe, purchase)
+grep "subscribe" dilans_data_cleaned.csv > /home/scriber/final_test/subscribe.csv
+grep "buy" dilans_data_cleaned.csv > /home/scriber/final_test/buy.csv
+grep -i "read" dilans_data_cleaned.csv | grep 'SEO\|Reddit\|AdWords' > /home/scriber/final_test/first_visit.csv
+grep -i "read" dilans_data_cleaned.csv | grep -v 'SEO\|Reddit\|AdWords' > /home/scriber/final_test/visit.csv
+
+
+CHECKING SEPERATION
+wc -c /home/scriber/final_test/dilians_data.csv  34 060 918 
+
+wc -c /home/scriber/final_test/buy.csv  312 826
+wc -c /home/scriber/final_test/subscribe.csv 312 338
+wc -c /home/scriber/final_test/first_visit.csv 12 873 054 
+wc -c /home/scriber/final_test/visit.csv 20 562 700 
+
+SUM: 34 060 918 -> OK 
+
+
+DATA FORMATTING (change event name to first_read)
+sed 's/read/first_read/g' first_visit.csv > /home/scriber/final_test/first_visit_cleaned.csv
+
+
+
+DATA LOAD INTO SQL
+
+CREATE TABLE visit
+(
+  my_date    DATE,
+  my_time    TIME,
+  event      TEXT,
+  country    TEXT,
+  user_id    TEXT,
+  topics     TEXT
+);
+ 
+CREATE TABLE first_visit
+(
+  my_date    DATE,
+  my_time    TIME,
+  event      TEXT,
+  country    TEXT,
+  user_id    TEXT,
+  source     TEXT,
+  topics     TEXT
+);
+
+CREATE TABLE subscribe
+(
+  my_date    DATE,
+  my_time    TIME,
+  event      TEXT,
+  user_id    TEXT
+);
+
+
+CREATE TABLE buy
+(
+  my_date    DATE,
+  my_time    TIME,
+  event      TEXT,
+  user_id    TEXT,
+  price      INT
+);
+
+COPY first_visit FROM '/home/scriber/final_test/first_visit_cleaned.csv' WITH DELIMITER ' ';
+COPY visit FROM '/home/scriber/final_test/visit.csv' WITH DELIMITER ' ';
+COPY subscribe FROM '/home/scriber/final_test/subscribe.csv' WITH DELIMITER ' ';
+COPY buy FROM '/home/scriber/final_test/buy.csv' WITH DELIMITER ' ';
+
+COMMIT;
+
+CHECKING DATA LOAD 
+wc -l /home/scriber/final_test/first_visit_cleaned.csv   210 023 OK
+wc -l /home/scriber/final_test/visit.csv         	371 854 OK
+wc -l /home/scriber/final_test/subscribe.csv     	7618 OK
+wc -l /home/scriber/final_test/buy.csv 	    	 	8407 OK 
+
+
+awk -F' ' '{print $1,$3,$5}' first_visit.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$5}' visit.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$4}' subscribe.csv >> all_events.csv
+awk -F' ' '{print $1,$3,$4}' buy.csv >> all_events.csv
